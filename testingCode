@@ -2,6 +2,9 @@ package com.github.creaticat;
 
 import org.javacord.api.DiscordApi;
 import org.javacord.api.DiscordApiBuilder;
+import org.javacord.api.entity.activity.Activity;
+import org.javacord.api.entity.activity.ActivityType;
+import org.javacord.api.entity.message.embed.EmbedBuilder;
 
 public class Main {
 
@@ -13,6 +16,9 @@ public class Main {
 
         //logs in the bot
         DiscordApi api = new DiscordApiBuilder().setToken(token).login().join();
+        
+        //updates bot status
+        api.updateActivity(ActivityType.PLAYING, "pogger");
 
         // Add a listener which answers based on user input
         api.addMessageCreateListener(event -> {
@@ -21,6 +27,24 @@ public class Main {
             }
             if (event.getMessageContent().equalsIgnoreCase(".hello")) {
                 event.getChannel().sendMessage("i want die");
+            }
+            if (event.getMessageContent().contains(".embed")) {
+                String messageContent = event.getMessageContent().toString(); //store what was just said
+                messageContent = messageContent.replace(".embed ", ""); // take away the initial command ".hello"
+
+                // Create the embed
+                EmbedBuilder embed = new EmbedBuilder()
+                        .setTitle(messageContent) //input is put here
+                        .setDescription(messageContent) //input is put here
+                        .setAuthor("Author Name", "http://google.com/", "https://cdn.discordapp.com/embed/avatars/0.png")
+                        .addField("A field", "Some text inside the field")
+                        .addInlineField("An inline field", "More text")
+                        .addInlineField("Another inline field", "Even more text")
+                        .setColor(Color.BLUE)
+                        .setFooter("Footer", "https://cdn.discordapp.com/embed/avatars/1.png")
+                        .setImage("https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/969081f9-ae52-4af9-aaf8-a89f0e9a0cf2/dcxjyfb-d03bd7b1-1f18-4b3c-8b35-794de8312991.gif?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOiIsImlzcyI6InVybjphcHA6Iiwib2JqIjpbW3sicGF0aCI6IlwvZlwvOTY5MDgxZjktYWU1Mi00YWY5LWFhZjgtYTg5ZjBlOWEwY2YyXC9kY3hqeWZiLWQwM2JkN2IxLTFmMTgtNGIzYy04YjM1LTc5NGRlODMxMjk5MS5naWYifV1dLCJhdWQiOlsidXJuOnNlcnZpY2U6ZmlsZS5kb3dubG9hZCJdfQ.FBSOaTY3c7CkSLGqfXeuN7jmCAbVF3Crx_tB8HIQn5o");
+                // Send the embed
+               event.getChannel().sendMessage(embed);
             }
         });
 
