@@ -1,0 +1,53 @@
+package com.github.creaticat;
+
+    import org.javacord.api.DiscordApi;
+    import org.javacord.api.DiscordApiBuilder;
+    import org.javacord.api.entity.channel.*;
+    import org.javacord.api.entity.message.MessageBuilder;
+    import org.javacord.api.event.message.MessageCreateEvent;
+    import org.javacord.api.listener.message.MessageCreateListener;
+
+    import java.util.Collection;
+
+    public class Main {
+
+        private static String nameFin;
+
+        public static void main(String[] args) {
+            String token = "Nzc3MDA1Mzk2ODcwNjkyOTA0.X69Iqg.-Gh-dOGx9kuK0z-FKHLB23kHrjY";
+            //log bot in
+            DiscordApi thisBot = logIn(token);
+
+            setName(thisBot.getYourself().getName());
+
+            // Add a listener which answers based on user input
+            thisBot.addMessageCreateListener(event -> {
+
+                String nameNow = nameFin;
+               
+                //the response if someone says .hello , can be used to check what is the current name
+                if (event.getMessageContent().equalsIgnoreCase(".hello")) {
+                    event.getChannel().sendMessage("Hi, I am " + nameNow);
+                }
+
+                //setting the name of the bot
+                if (event.getMessageContent().substring(0,6).equalsIgnoreCase(".name ")){
+                    nameNow = event.getMessageContent().substring(6);
+                    event.getChannel().sendMessage("oh my name is " + nameNow);
+                    setName(nameNow);
+                }
+            });
+
+        }
+
+        //setter for the name of the bot
+        private static void setName(String nameNow) {
+            nameFin = nameNow;
+        }
+
+        //a method to make this more compact
+        public static DiscordApi logIn(String token){
+            //logging the bot on
+            return new DiscordApiBuilder().setToken(token).login().join();
+        }
+    }
