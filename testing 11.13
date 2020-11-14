@@ -1,0 +1,83 @@
+    package com.github.creaticat;
+
+    import org.javacord.api.DiscordApi;
+    import org.javacord.api.DiscordApiBuilder;
+    import org.javacord.api.AccountUpdater;
+    import org.javacord.api.entity.channel.*;
+    import org.javacord.api.entity.message.MessageBuilder;
+
+    import java.util.Collection;
+
+    public class Main {
+
+        public static void main(String[] args) {
+            String token = "Nzc3MDA1Mzk2ODcwNjkyOTA0.X69Iqg.O7CO5AEi0gxZdhYVdZFjk0tFOfA";
+            //log bot in
+            DiscordApi thisBot = logIn(token);
+
+            //gets all of the channels in a server
+            Collection<Channel> col = thisBot.getChannels();
+            //chnl is an array of all of the channels because it starts as a collection
+            Object[] chnl = col.toArray();
+
+            MessageBuilder m = new MessageBuilder();
+
+            //for finding the channel ids and stuff
+            /*for (int i = 0;i < chnl.length; i++ ){
+                m.append(chnl[i].toString() + "\n");
+                //chnl[0] is jen-test
+                m.send((TextChannel)chnl[0]);
+            }
+            */
+
+            //gets the type of this thing and has it be a string
+            String botType = thisBot.getAccountType().toString();
+
+            // Add a listener which answers based on user input
+            thisBot.addMessageCreateListener(event -> {
+                //randomly sends a nya when people type
+                int randNum = (int)(Math.random()*(9)+1);
+                if (randNum % 2 == 0){
+                    quickMessage(randNum, (TextChannel)chnl[0]);
+                }
+                //the response if someone says .hello
+                if (event.getMessageContent().equalsIgnoreCase(".hello")) {
+                    event.getChannel().sendMessage("Hi, I am " + botType);
+                }
+            });
+        }
+
+        //a method to make this more compact
+        public static DiscordApi logIn(String token){
+            //logging the bot on
+            return new DiscordApiBuilder().setToken(token).login().join();
+        }
+
+        //sends a message/the method requires u to add a string and the channel to send it in
+        public static void quickMessage (String message, TextChannel txtChnl){
+            //creates a new message
+            MessageBuilder msg = new MessageBuilder();
+
+            //adds your message to be sent
+            msg.append(message);
+
+            //sends the message in the given text channel
+            msg.send(txtChnl);
+        }
+
+        public static void quickMessage (int randomNum, TextChannel txtChnl){
+            //creates a new message
+            MessageBuilder msg = new MessageBuilder();
+
+            //partially randomizes the message
+            if (randomNum > 5) {
+                msg.append("uwu");
+            } else {
+                msg. append("nya");
+            }
+
+            //sends the message in the given text channel
+            msg.send(txtChnl);
+        }
+
+    }
