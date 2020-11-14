@@ -18,10 +18,14 @@ public class Creaticat {
 
     public static void main(String[] args) {
         // Insert your bot's token here
-        String token = "Nzc3MDA1NDc1OTM3MTI0MzUy.X69IvQ.bcYHBj8DPUhgr3o43lGwVPTxp1I";
+        String token = "Bot Token Here!";
 
-        //logs the bot on
-        DiscordApi api = new DiscordApiBuilder().setToken(token).login().join();
+        //logs the bot on with all intents enabled
+        DiscordApi api = new DiscordApiBuilder()
+                .setToken(token)
+                .setAllIntents()
+                .login()
+                .join();
 
         //resets stats
         resetStats();
