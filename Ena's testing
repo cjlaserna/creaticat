@@ -1,0 +1,142 @@
+package creaticatPackage;
+
+import org.javacord.api.DiscordApi;
+import org.javacord.api.DiscordApiBuilder;
+import org.javacord.api.entity.message.embed.EmbedBuilder;
+import java.awt.Color;
+import org.javacord.api.entity.channel.ServerTextChannelBuilder;
+
+public class Creaticat {
+
+    private static String catname;
+    private static int friendlvl;
+    private static int happylvl;
+    private static String quote;
+    private static String fDescrip;
+    private static String hDescrip;
+    EmbedBuilder embed;
+
+    public Creaticat() { //constructor
+        catname = "";
+        quote = "";
+        friendlvl = 0;
+        happylvl = 20; //starts at 20 bc neutral.
+        fDescrip = "";
+        hDescrip = "";
+    }
+
+    public static void main(String[] args) {
+        // Insert your bot's token here
+        String token = "Nzc3MDA1NDc1OTM3MTI0MzUy.X69IvQ.lAyB3PsvvlCAL1was_amlpVO1yE";
+
+        //logs the bot on
+        DiscordApi api = new DiscordApiBuilder().setToken(token).login().join();
+
+
+        //.info command (NO LONGER WORKS IDK Y)
+        api.addMessageCreateListener(event -> {
+            if (event.getMessageContent().equalsIgnoreCase(".info")) {
+
+            // Embed for Info
+                EmbedBuilder embed = new EmbedBuilder()
+                        .setTitle(catname)
+                        .setDescription(quote)
+                        .setAuthor("Ena", "http://google.com/", "https://cdn.discordapp.com/embed/avatars/0.png")
+                        .addField("Friendliness", fDescrip)
+                        .addInlineField("An inline field", "More text")
+                        .addInlineField("Another inline field", "Even more text")
+                        .setColor(Color.BLUE)
+                    //    .setFooter("Footer", "https://cdn.discordapp.com/embed/avatars/1.png")
+                        .setImage("https://cdn.discordapp.com/attachments/776249558598025237/776249650360746034/sleeping.png");
+                    //    .setThumbnail("https://cdn.discordapp.com/attachments/776249558598025237/776249650360746034/sleeping.png");
+                // Send the embed
+                event.getChannel().sendMessage(embed);
+            }
+        });
+
+
+        //.creaticat
+        api.addMessageCreateListener(event -> {
+            if (event.getMessageContent().equalsIgnoreCase(".creaticat")) {
+                event.getChannel().sendMessage("Nya!");
+            }
+        });
+
+
+        // .pet
+        api.addMessageCreateListener(event -> {
+            if (event.getMessageContent().equalsIgnoreCase(".pet")) {
+                int incr = (int)pet();
+                happylvl += incr;
+                event.getChannel().sendMessage("Happiness +" + incr);
+            }
+        });
+
+        // .pray
+        api.addMessageCreateListener(event -> {
+            if (event.getMessageContent().equalsIgnoreCase(".pray")) {
+                int incrf = (int)pray();
+                friendlvl += incrf;
+                event.getChannel().sendMessage("Friendship +" + incrf);
+            }
+        });
+
+        // Print the invite url of your bot
+        System.out.println("You can invite the bot by using the following url: " + api.createBotInvite());
+    }
+
+    public static double pet() {
+        double increase = (int)(Math.random() * ((10 - 1) + 2));
+    return increase;
+    };
+
+    public static double pray() {
+        double prayinc = (int)(Math.random() * ((2 - 1) + 1));
+        return prayinc;
+    };
+
+    public void setfDescrip(int flvl){ //changes description based on friendship level
+        if (flvl < 10){
+            fDescrip = catname + " flicks its tail with a dangerous glint in its eyes.";
+        }
+        else if (flvl >= 10 && flvl < 25){
+            fDescrip = catname + " gracefully sits on the top of the shrine, looking down at you disdainfully.";
+        }
+        else if (flvl >= 25 && flvl < 50){
+            fDescrip = catname + " looks forward to your offerings.";
+        }
+        else if (flvl >= 50 && flvl < 75){
+            fDescrip = catname + "'s languid form melts underneath the sun's rays. Perhaps " + catname + " is getting a bit too comfortable?";
+        }
+        else if (flvl >= 75 && flvl < 99){
+            fDescrip = "Looks like you're less of a devout worshipper and more of a pet-keeper these days... Not that " + catname + " would ever admit it.";
+        }
+        else{
+            fDescrip = "Being best friends with a cat god ain't bad...";
+        }
+    }
+
+    public void setQuote(int flvl){ //changes quote based on friendship level
+        if (flvl < 10){
+            quote = "What'cha staring at, puny mortal?";
+            fDescrip = catname + " flicks its tail with a dangerous glint in its eyes.";
+        }
+        else if (flvl >= 10 && flvl < 25){
+            quote = "Hmm? Looking for something?";
+        }
+        else if (flvl >= 25 && flvl < 50){
+            quote = "I presume you brought offerings if you're seeking my wisdom.";
+        }
+        else if (flvl >= 50 && flvl < 75){
+            quote = "*Yawns*~ ...You need something?";
+        }
+        else if (flvl >= 75 && flvl < 99){
+            quote = "Welcome back. You've been gone for a while, I've gotten bored!";
+        }
+        else{
+            quote = "You're a pretty cool person, I like you a lot!";
+        }
+    }
+
+
+}
