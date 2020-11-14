@@ -1,0 +1,186 @@
+package creaticatPackage;
+
+import org.javacord.api.DiscordApi;
+import org.javacord.api.DiscordApiBuilder;
+import org.javacord.api.entity.message.embed.EmbedBuilder;
+import java.awt.Color;
+import org.javacord.api.entity.channel.ServerTextChannelBuilder;
+import java.util.*;
+import java.lang.Thread; //for sleep
+import java.sql.*; //for the time class
+
+
+public class Creaticat {
+
+    //IVARs
+    private String name;
+    private int friendlvl;
+    private int happylvl;
+    private String quote;
+    private String fDescrip;
+    private int cdPet;
+    private int cdPray;
+
+    public Creaticat(){ //a constructor (static --> not static)
+        this.name = "default name";
+        this.friendlvl = 0;
+        this.happylvl = 0;
+        this.quote = "default quote";
+        this.fDescrip = "default fdescrip";
+        this.cdPet = 0; //300 seconds (5 mins)
+        this.cdPray = 0; //(21600 seconds) 6 hours when on cd(pray)
+    }
+
+    public Creaticat(String name, int flvl, int hlvl){ //loaded constructor
+        this.name = name;
+        this.friendlvl = flvl;
+        this.happylvl = hlvl;
+        this.quote = "default quote";
+        this.fDescrip = "default fdescrip";
+        this.cdPet = 300; //300 seconds (5 mins)
+        this.cdPray = 21600; //6 hours (pray)
+    }
+
+
+    public static void main(String[] args){
+        // Insert your bot's token here
+        String token = "Nzc3MDA1NDc1OTM3MTI0MzUy.X69IvQ.tPIt09NTYuSaDcZlY0zfi2cP4vI";
+        
+        //logs the bot on with all intents enabled
+        DiscordApi api = new DiscordApiBuilder()
+                .setToken(token)
+                .setAllIntents()
+                .login()
+                .join();
+
+        //if the bot crashes
+        api.setReconnectDelay(attempt -> attempt * 2);
+        
+
+        
+        
+        Creaticat cat = new Creaticat(); //instance of a creaticat object
+
+        //.pet
+        Creaticat.pet(); //TODO
+
+        // .pray
+        Creaticat.pray(); //TODO
+
+        // .invite
+        api.addMessageCreateListener(event -> {
+            if (event.getMessageContent().equalsIgnoreCase(".invite")) {
+                event.getChannel().sendMessage("Invite the cat:\n" + api.createBotInvite());
+            }
+        });
+
+        //.cd (timer up
+        Creaticat.cd(); //TODO
+        
+        //.info
+        Creaticat.info(); //TODO
+        
+    }
+
+
+
+
+
+
+// for these two (pet and pray) look at my 1.2 update in Github and use that
+    public void pet(int oldHlvl) { //TODO
+    };
+
+    public void pray() { //TODO 
+    };
+    
+    //-------TIMERS-------
+    
+    //pet timer running
+    public void petTimer() throws InterruptedException{
+        while (cdPet != 0 ) { //pet countdown
+            cdPet--;
+            Thread.sleep(1000); // 1 seconds
+        }
+    }
+
+    //pray timer running
+    public void prayTimer() throws InterruptedException{
+        while (cdPray != 0) { //pray cooldown
+            cdPray--;
+            Thread.sleep(1000); //1 seconds
+        }
+    }
+
+
+
+    // ----------SETTERS--------
+    
+    //set quote based on friend lvl
+    public void setfDescrip(){ //changes description based on friendship level
+        if (friendlvl < 10){
+            fDescrip = name + " flicks its tail with a dangerous glint in its eyes.";
+        }
+        else if (friendlvl >= 10 && friendlvl < 25){
+            fDescrip = name + " gracefully sits on the top of the shrine, looking down at you disdainfully.";
+        }
+        else if (friendlvl >= 25 && friendlvl < 50){
+            fDescrip = name + " looks forward to your offerings.";
+        }
+        else if (friendlvl >= 50 && friendlvl < 75){
+            fDescrip = name + "'s languid form melts underneath the sun's rays. Perhaps " + name + " is getting a bit too comfortable?";
+        }
+        else if (friendlvl >= 75 && friendlvl < 99){
+            fDescrip = "Looks like you're less of a devout worshipper and more of a pet-keeper these days... Not that " + name + " would ever admit it.";
+        }
+        else{
+            fDescrip = "Being best friends with a cat god ain't bad...";
+        }
+    }
+
+    //set quote based on happy level
+    public void setQuote(){
+        if (happylvl < 10){
+            quote = "What'cha staring at, puny mortal?";
+        }
+        else if (happylvl >= 10 && happylvl < 25){
+            quote = "Hmm? Looking for something?";
+        }
+        else if (happylvl >= 25 && happylvl < 50){
+            quote = "I presume you brought offerings if you're seeking my wisdom.";
+        }
+        else if (happylvl >= 50 && happylvl < 75){
+            quote = "*Yawns*~ ...You need something?";
+        }
+        else if (friendlvl >= 75 && friendlvl < 99){
+            quote = "Welcome back. You've been gone for a while, I've gotten bored!";
+        }
+        else{
+            quote = "You're a pretty cool person, I like you a lot!";
+        }
+    }
+
+    //set name
+    public void setName(){
+
+    } //TODO
+
+    //resets .pet timer
+    public void setCdPet(){
+        cdPet = 300;
+    }
+
+    //resets .pray timer
+    public void setCdPray(){
+        cdPray = 21600;
+    }
+    
+    
+    // -----------GETTERS ---------
+    
+    // equivalent to .cd in mudae
+    public static String getCd(){
+        return "CD Pet: " + cdp + "\nCD Pray: " + cdpr;
+    }
+
+}
