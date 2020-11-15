@@ -24,3 +24,5 @@ The commands are listed below:
 .invite - Invite me to other servers (I need more followers~)
 
 .speak - Have something to say?
+
+The final version of the project is Creaticat 2.7
