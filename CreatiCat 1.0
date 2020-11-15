@@ -1,0 +1,381 @@
+package com.github.creaticat;
+
+import org.javacord.api.DiscordApi;
+import org.javacord.api.DiscordApiBuilder;
+import org.javacord.api.entity.activity.ActivityType;
+import org.javacord.api.entity.message.embed.EmbedBuilder;
+import java.util.Date;
+
+import java.util.Timer;
+import java.util.TimerTask;
+
+public class Main {
+
+    private static String catName = "CreatiCat";
+    private static int friendlvl;
+    private static int happylvl;
+    private static String quote;
+    private static String fDescrip;
+    private static String op = ".";
+    private static String imgLink;
+
+    private static Date lastPetted;
+    private static Date lastPrayed;
+    private static String tributeQuote;
+
+    public static void main(String[] args) {
+
+
+        //log bot in
+        DiscordApi thisBot = logIn("Nzc1OTQxNzg3OTczMTg5NjYy.X6tqGg.6M4cIZdOyGb-9wWgxQ7DKeyA9Ss");
+        //updates bot status
+        thisBot.updateActivity(ActivityType.WATCHING,
+                "you mortals, for I am the great " + getCatName());
+
+        // hello - done
+        thisBot.addMessageCreateListener(event -> {
+            if (event.getMessageContent().equalsIgnoreCase(getOp() + "hello")) {
+                event.getChannel().sendMessage("I am the great " + getCatName()
+                        +". If you need help, please ask(" + getOp() + "help)");
+                setQuote();
+                event.getChannel().sendMessage(getQuote());
+                setfDescrip();
+                event.getChannel().sendMessage(getfDescrip());
+            }
+        });
+
+        // help
+        thisBot.addMessageCreateListener(event -> {
+            if (event.getMessageContent().equalsIgnoreCase(getOp() + "help")) {
+
+                EmbedBuilder statsEmbed = new EmbedBuilder()
+                        .setTitle("Actions:")
+                        .addField("Name our local god",
+                                getOp() + "setName <insert name here>")
+                        .addField("Say \"hi\" to our local god",
+                                getOp() + "hello")
+                        .addField("Change the summoning ritual (changing the prefix)",
+                                getOp() + "setPrefix <insert your symbol of choice>")
+                        .addField("You can pet me (be nice tho... I'm watching you...)",
+                                getOp() + "pet")
+                        .addField("You can pray to me (I am a god after all... or, used to be...)",
+                                getOp() + "pray")
+                        .addField("Gimme money (I need it for the catnip, I am still a cat y'know?)",
+                                getOp() + "pet"
+                                        + "\n pssst, this is a once a day type of thing")
+                        .addField("Risk your fingers",
+                                getOp() + "boop")
+                        .addField("Check up on me",
+                                getOp() + "info")
+                        .addField("Invite me to other servers (I need more followers)",
+                                getOp() + "invite");
+
+                event.getChannel().sendMessage(statsEmbed);
+            }
+        });
+
+        // changing the prefix - done
+        thisBot.addMessageCreateListener(event -> {
+            if (event.getMessageContent().substring(0,11).equalsIgnoreCase(getOp() + "setPrefix ")) {
+                setOp(event.getMessageContent().substring(11));
+                event.getChannel().sendMessage("You can summon me using " + getOp() + " now");
+            }
+        });
+
+        // reaction to booping - done
+        thisBot.addMessageCreateListener(event -> {
+            if (event.getMessageContent().equalsIgnoreCase(getOp() + "boop")) {
+                event.getChannel().sendMessage("grrr >:^(");
+                setQuote();
+                event.getChannel().sendMessage(getQuote());
+                setfDescrip();
+                event.getChannel().sendMessage(getfDescrip());
+            }
+        });
+
+        //!info (no embed) - done
+        thisBot.addMessageCreateListener(event -> {
+            if (event.getMessageContent().equalsIgnoreCase(getOp() + "info")) {
+
+                String catName = getCatName();
+                setQuote();
+                setfDescrip();
+                setImage();
+
+                EmbedBuilder statsEmbed = new EmbedBuilder()
+                        .setTitle("Current Stats:")
+                        .addField("Name", catName)
+                        .addField("Friendship Level", getFriendshipLvl())
+                        .addField("Happiness Level", getHappinessLvl())
+                        .addField("Description", getfDescrip())
+                        .addField("Kitty quote of the day", getQuote())
+                        .setImage(getImgLink());
+
+                event.getChannel().sendMessage(statsEmbed);
+            }
+        });
+
+        //speak
+        thisBot.addMessageCreateListener(event -> {
+            if (event.getMessageContent().equalsIgnoreCase(getOp() + "speak")) {
+                setQuote();
+                event.getChannel().sendMessage(getQuote());
+                setfDescrip();
+                event.getChannel().sendMessage(getfDescrip());
+            }
+        });
+
+
+        // pet - done
+        thisBot.addMessageCreateListener(event -> {
+            if (event.getMessageContent().equalsIgnoreCase(getOp() + "pet")) {
+                //pet cooldown
+                long coolDown = 300000 - (getDate().getTime() - getLastPetted().getTime());
+                if (coolDown <= 0) {
+                    int incr = (int) pet();
+                    happylvl += incr;
+                    event.getChannel().sendMessage("Happiness +" + incr);
+                    setQuote();
+                    event.getChannel().sendMessage(getQuote());
+                    setfDescrip();
+                    event.getChannel().sendMessage(getfDescrip());
+                    setLastPetted(getDate());
+                }
+                else {
+                    event.getChannel().sendMessage("You must wait " + coolDown/60000 +
+                            " minutes before you can pet the cat again.");
+                }
+            }
+        });
+
+        // pray - done
+        thisBot.addMessageCreateListener(event -> {
+            if (event.getMessageContent().equalsIgnoreCase(getOp() + "pray")) {
+                //pray cooldown
+                long coolDown = 300000 - (getDate().getTime() - getLastPrayed().getTime());
+                if (coolDown <= 0) {
+                    int incrf = (int) pray();
+                    friendlvl += incrf;
+                    event.getChannel().sendMessage("Friendship +" + incrf);
+                    setQuote();
+                    event.getChannel().sendMessage(getQuote());
+                    setfDescrip();
+                    event.getChannel().sendMessage(getfDescrip());
+                    setLastPrayed(getDate());
+                }
+                else {
+                    event.getChannel().sendMessage("You must wait " + coolDown/60000 +
+                            " minutes before you can pet the cat again.");
+                }
+            }
+        });
+
+        //tribute
+        thisBot.addMessageCreateListener(event -> {
+            if (event.getMessageContent().equalsIgnoreCase(getOp() + "tribute")) {
+                long coolDown = 86400000 - (getDate().getTime() - getLastPrayed().getTime());
+                if (coolDown <= 0) {
+                    int num = (int) (Math.random() * ((4) + 1)); //random between 5 and 0
+                    friendlvl += 5;
+                    happylvl += 20;
+                    event.getChannel().sendMessage(getTributeQuote(num) + "\nHappiness +20");
+                    setQuote();
+                    event.getChannel().sendMessage(getQuote());
+                    setfDescrip();
+                    event.getChannel().sendMessage(getfDescrip());
+                }
+
+                else {
+                    event.getChannel().sendMessage("You must wait " + coolDown/3600000 +
+                            " hours before you can pet the cat again.");
+                }
+
+            }
+
+        });
+
+        // set cat name - done
+        thisBot.addMessageCreateListener(event -> {
+
+            String nameNow = catName;
+            //setting the name of the bot
+            if (event.getMessageContent().substring(0,9).equalsIgnoreCase(getOp() + "setName ")) {
+                nameNow = event.getMessageContent().substring(9);
+                event.getChannel().sendMessage("oh my name is " + nameNow + " now, huh...");
+                setName(nameNow);
+                thisBot.updateActivity(ActivityType.WATCHING, "you mortals, for I am the great " + getCatName());
+            }
+        });
+
+        //!time
+        thisBot.addMessageCreateListener(event -> {
+            if (event.getMessageContent().equalsIgnoreCase(getOp() + "time")) {
+                event.getChannel().sendMessage(String.valueOf(getDate()));
+            }
+        });
+
+        // invite - done
+        thisBot.addMessageCreateListener(event -> {
+            if (event.getMessageContent().equalsIgnoreCase(getOp() + "invite")) {
+                event.getChannel().sendMessage("Invite the cat:\n" + thisBot.createBotInvite());
+            }
+        });
+    }
+
+    //log bot in
+    public static DiscordApi logIn(String token){
+        return new DiscordApiBuilder().setToken(token).login().join();
+    }
+
+    //set operator/prefix
+    private static void setOp(String chosenOp){
+        op = chosenOp;
+    }
+
+    //set cat name
+    private static void setName(String nameNow) {
+        catName = nameNow;
+    }
+
+    //pet thing
+    public static double pet() {
+        double increase = (int)(Math.random() * ((10 - 1) + 2));
+        return increase;
+    };
+
+    //pray to thing
+    public static double pray() {
+        double prayinc = (int)(Math.random() * ((5 - 1) + 1));
+        return prayinc;
+    };
+
+
+    //getters
+    public static String getFriendshipLvl() {
+        return String.valueOf(friendlvl);
+    }
+    public static String getHappinessLvl() {
+        return String.valueOf(happylvl);
+    }
+    public static String getfDescrip() {
+        return fDescrip;
+    }
+    public static String getQuote() {
+        return quote;
+    }
+    public static String getOp(){
+        return op;
+    }
+    public static String getCatName(){
+        return catName;
+    }
+    public static String getImgLink(){
+        return imgLink;
+    }
+    public static Date getDate(){
+        return new Date();
+    }
+    public static String getTime(){
+        return String.valueOf(getDate()).substring(11, 19);
+    }
+    public static Date getLastPetted(){
+        return lastPetted;
+    }
+    public static Date getLastPrayed(){
+        return lastPrayed;
+    }
+    public static String getTributeQuote(int num){
+        setTributeQuote(num);
+        return tributeQuote;
+    }
+    public static void setLastPetted(Date when) {
+        lastPetted = when;
+    }
+    public static void setLastPrayed(Date when) {
+        lastPrayed = when;
+    }
+
+    //sets quote based on happiness level
+    public static void setQuote(){ //changes quote based on friendship level
+        if (happylvl < 10){
+            quote = "Wha'cha staring at, puny mortal?";
+        }
+        else if (happylvl >= 10 && happylvl < 25){
+            quote = "Hmm? Looking for something?";
+        }
+        else if (happylvl >= 25 && happylvl < 50){
+            quote = "I presume you brought offerings if you're seeking my wisdom.";
+        }
+        else if (happylvl >= 50 && happylvl < 75){
+            quote = "*Yawns*~ ...You need something?";
+        }
+        else if (friendlvl >= 75 && friendlvl < 99){
+            quote = "Welcome back. You've been gone for a while, I've gotten bored!";
+        }
+        else{
+            quote = "You're a pretty cool person, I like you a lot!";
+        }
+    }
+
+    //sets friendship description based on friendship level
+    public static void setfDescrip(){ //changes description based on friendship level
+        if (friendlvl < 10){
+            fDescrip = catName + " flicks its tail with a dangerous glint in its eyes.";
+        }
+        else if (friendlvl >= 10 && friendlvl < 25){
+            fDescrip = catName + " gracefully sits on the top of the shrine, looking down at you disdainfully.";
+        }
+        else if (friendlvl >= 25 && friendlvl < 50){
+            fDescrip = catName + " looks forward to your offerings.";
+        }
+        else if (friendlvl >= 50 && friendlvl < 75){
+            fDescrip = catName + "'s languid form melts underneath the sun's rays. Perhaps " + catName + " is getting a bit too comfortable?";
+        }
+        else if (friendlvl >= 75 && friendlvl < 99){
+            fDescrip = "Looks like you're less of a devout worshipper and more of a pet-keeper these days... Not that " + catName + " would ever admit it.";
+        }
+        else{
+            fDescrip = "Being best friends with a cat god ain't bad...";
+        }
+    }
+
+    //sets quote based on happiness level
+    public static void setImage(){ //changes quote based on friendship level
+        if (happylvl < 10){
+            imgLink = "https://media.discordapp.net/attachments/776249558598025237/776249650360746034/sleeping.png?width=670&height=670";
+        }
+        else if (happylvl >= 50 && happylvl < 75){
+            imgLink = "https://media.discordapp.net/attachments/776249558598025237/776249647097970708/bored.png?width=670&height=670";
+        }
+        else{
+            imgLink = "https://media.discordapp.net/attachments/776249558598025237/776249650042765352/wink.png?width=670&height=670";
+        }
+    }
+
+    //sets tribute quote (random)
+    public static void setTributeQuote(int num){
+        switch (num){
+            case 0: tributeQuote = "Oh? Looks like you do know manners after all, hehe."; break;
+            case 1: tributeQuote = "Tasty! Yum."; break;
+            case 2: tributeQuote = "Heh, you have good taste."; break;
+            case 3: tributeQuote = "*Your food vanishes in the blink of an eye*"; break;
+            case 4: tributeQuote = "Ah! You brought fish today!"; break;
+        }
+    }
+
+    //reset
+    public static void resetStats() {
+        catName = "";
+        quote = "";
+        friendlvl = 0;
+        happylvl = 0;
+        fDescrip = "";
+
+        Date dateMade = getDate();
+
+        lastPetted = dateMade;
+
+        lastPrayed = dateMade;
+
+    }
+}
