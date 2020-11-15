@@ -3,7 +3,7 @@ Premise: the stray neighborhood cat (that’s actually a deity) for your discord
 
 The final version of the project and its code is called CreatiCat 2.7
 
-A few of the commands are listed below:
+The commands are listed below:
 
 .setPrefix <prefix> - Change the prefix for using the bot
 
@@ -22,3 +22,5 @@ A few of the commands are listed below:
 .info - Check up on me!
 
 .invite - Invite me to other servers (I need more followers~)
+
+.speak - Have something to say?
