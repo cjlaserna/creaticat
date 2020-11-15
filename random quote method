@@ -1,0 +1,26 @@
+//sets a random quote (random pick 5 between insult/compliment based on friendship)
+    public static void setRandQuote(){
+        int rand = (int)(Math.random()*((5-1))+1);
+
+        if(friendlvl > 45) { //compliment
+            switch (rand) {
+                case 1: randQuote = "Luck seems to be on your side today.";
+                case 2: randQuote = "Being friends with you... isn't bad.";
+                case 3: randQuote = "Hm, you're a pretty good devotee.";
+                case 4: randQuote = "You're one of the better humans I've met.";
+                case 5: randQuote = "Mm. Whatever you're thinking about, you'll be fine. I'll lend you some luck too.";
+                default: randQuote = "DefaultCompliment";
+            }
+        }
+        else{ //insult
+            switch (rand){
+                case 1: randQuote = "Hmph, I didn't know I had a turtle for a devotee. Can't you clean any faster?";
+                case 2: randQuote = "Don't touch me.";
+                case 3: randQuote = "Tch.";
+                case 4: randQuote = "What?! Have something to say? Then get talking, you have 10 seconds.";
+                case 5: randQuote = "You want my blessing? Hah! Go find someone else, I'm not your luck depositing slave.";
+                default: randQuote = "DefaultInsult";
+            }
+        }
+
+    }
